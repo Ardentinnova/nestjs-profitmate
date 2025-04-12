@@ -10,8 +10,7 @@ import {
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
-import { RequestWithUser } from 'src/common/types/req-with-user';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { HttpStatusCode } from 'axios';
 
 @Controller('auth')
@@ -50,7 +49,7 @@ export class AuthController {
   }
 
   @Post('refresh')
-  async refresh(@Req() req: RequestWithUser, @Res() res: Response) {
+  async refresh(@Req() req: Request, @Res() res: Response) {
     const { accessToken, refreshToken } =
       await this.authService.refreshTokenUser(req);
 

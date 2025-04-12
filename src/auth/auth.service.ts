@@ -5,9 +5,8 @@ import {
 } from '@nestjs/common';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
-import { RequestWithUser } from 'src/common/types/req-with-user';
 import { Response } from 'express';
-import { SupabaseService } from './supabase.service';
+import { SupabaseService } from 'src/common/supabase.service';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { PrismaService } from 'src/common/prisma.service';
 
@@ -27,7 +26,7 @@ export class AuthService {
 
     this.prisma.$transaction(async (tx) => {
       let userId = '';
-      const { data, error } = await this.supabase.auth.admin.createUser({
+      const { data, error } = await this.supabase.auth.signUp({
         email,
         password,
       });
@@ -40,18 +39,11 @@ export class AuthService {
         userId = data.user.id;
       }
 
-      const { id: businessId } = await tx.business.create({
-        data: {
-          name,
-        },
-      });
-
       await tx.profile.create({
         data: {
           name,
-          id: data.user.id,
+          id: data.user?.id!,
           email,
-          businessId,
         },
       });
 
@@ -79,7 +71,7 @@ export class AuthService {
     };
   }
 
-  async refreshTokenUser(req: RequestWithUser) {
+  async refreshTokenUser(req : any) {
     try {
       const refreshToken = req.cookies['refreshToken'];
       if (!refreshToken) {

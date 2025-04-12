@@ -1,4 +1,4 @@
-import { IsDateString, IsString } from 'class-validator';
+import { IsDateString, IsOptional, IsString } from 'class-validator';
 
 export class CreatePeriodDto {
   @IsString()
@@ -11,5 +11,6 @@ export class CreatePeriodDto {
   startDate: Date;
 
   @IsDateString()
-  endDate: Date;
+  @IsOptional()
+  endDate?: Date;
 }

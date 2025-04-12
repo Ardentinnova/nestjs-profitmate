@@ -2,10 +2,14 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 import { SupabaseService } from 'src/common/supabase.service';
+import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
-  constructor(private readonly supabaseService: SupabaseService) {
+  constructor(
+    private readonly supabaseService: SupabaseService,
+    private readonly prisma: PrismaService,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: process.env.SUPABASE_JWT_SECRET as string,
@@ -15,17 +19,16 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   async validate(payload: any) {
     const { sub } = payload;
 
-    const { data, error } = await this.supabaseService
-      .getClient()
-      .from('profiles')
-      .select('*')
-      .eq('id', sub)
-      .single();
+    const user = await this.prisma.profile.findUnique({
+      where: {
+        id: sub,
+      },
+    });
 
-    if (error || !data) {
+    if (!user) {
       throw new UnauthorizedException('Invalid token or user not found');
     }
 
-    return data;
+    return user;
   }
 }

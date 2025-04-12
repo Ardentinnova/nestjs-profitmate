@@ -1,6 +1,6 @@
 generator client {
-  provider        = "prisma-client-js"
-  output          = "../generated/prisma"
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -9,74 +9,73 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-
 model Profile {
-  id         String   @id
-  name       String
-  email      String
-  businessId String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id        String   @id
+  name      String
+  email     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  business   Business @relation(fields: [businessId], references: [id])
+  business Business[]
 }
 
 model Business {
-  id         String      @id @default(uuid())
-  name       String
-  createdAt  DateTime    @default(now())
+  id        String   @id @default(uuid())
+  name      String
+  workerId  String
+  createdAt DateTime @default(now())
 
-  profiles   Profile[]
-  periodes   Periode[]
-  transactions Transaction[]
+  profiles        Profile          @relation(fields: [workerId], references: [id])
+  periodes        Periode[]
+  transactions    Transaction[]
   productionCosts ProductionCost[]
-  sellingCosts SellingCost[]
+  sellingCosts    SellingCost[]
 }
 
 model Periode {
-  id         String      @id @default(uuid())
+  id         String   @id @default(uuid())
   name       String
   businessId String
   startDate  DateTime
-  endDate    DateTime
-  createdAt  DateTime    @default(now())
+  endDate    DateTime?
+  createdAt  DateTime @default(now())
 
-  business   Business     @relation(fields: [businessId], references: [id])
-  transactions Transaction[]
+  business        Business         @relation(fields: [businessId], references: [id])
+  transactions    Transaction[]
   productionCosts ProductionCost[]
-  sellingCosts SellingCost[]
+  sellingCosts    SellingCost[]
 }
 
 model Transaction {
-  id                 String       @id @default(uuid())
-  name               String
-  description        String
-  amount             BigInt
-  businessId         String
-  periodesId         String
-  type               TransactionType
-  expenseCategories  ExpenseCategory?
-  createdAt          DateTime     @default(now())
+  id                String           @id @default(uuid())
+  name              String
+  description       String
+  amount            BigInt
+  businessId        String
+  periodesId        String
+  type              TransactionType
+  expenseCategories ExpenseCategory?
+  createdAt         DateTime         @default(now())
 
-  business           Business     @relation(fields: [businessId], references: [id])
-  periode            Periode      @relation(fields: [periodesId], references: [id])
+  business Business @relation(fields: [businessId], references: [id])
+  periode  Periode  @relation(fields: [periodesId], references: [id])
 }
 
 model ProductionCost {
-  id         String         @id @default(uuid())
+  id         String             @id @default(uuid())
   businessId String
   periodesId String
   name       String
   amount     BigInt
   category   ProductionCategory
-  createdAt  DateTime       @default(now())
+  createdAt  DateTime           @default(now())
 
-  business   Business       @relation(fields: [businessId], references: [id])
-  periode    Periode        @relation(fields: [periodesId], references: [id])
+  business Business @relation(fields: [businessId], references: [id])
+  periode  Periode  @relation(fields: [periodesId], references: [id])
 }
 
 model SellingCost {
-  id               String   @id @default(uuid())
+  id               String @id @default(uuid())
   businessId       String
   periodesId       String
   productCount     Int
@@ -84,8 +83,8 @@ model SellingCost {
   initialInventory BigInt
   endingInventory  BigInt
 
-  business         Business @relation(fields: [businessId], references: [id])
-  periode          Periode  @relation(fields: [periodesId], references: [id])
+  business Business @relation(fields: [businessId], references: [id])
+  periode  Periode  @relation(fields: [periodesId], references: [id])
 }
 
 enum TransactionType {

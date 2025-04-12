@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreatePeriodDto } from './dto/create-period.dto';
 import { UpdatePeriodDto } from './dto/update-period.dto';
 import { PrismaService } from 'src/common/prisma.service';
+import { ensureFound } from 'src/common/helpers/ensure-found';
 
 @Injectable()
 export class PeriodService {
@@ -19,20 +20,24 @@ export class PeriodService {
     });
   }
 
-  findAll(businessId: string) {
-    return this.prisma.periode.findMany({
-      where: {
-        businessId,
-      },
-    });
+  async findAll(businessId: string) {
+    return ensureFound(
+      await this.prisma.periode.findMany({
+        where: {
+          businessId,
+        },
+      }),
+    );
   }
 
-  findOne(id: string) {
-    return this.prisma.periode.findUnique({
-      where: {
-        id,
-      },
-    });
+  async findOne(id: string) {
+    return ensureFound(
+      await this.prisma.periode.findUnique({
+        where: {
+          id,
+        },
+      }),
+    );
   }
 
   update(id: string, updatePeriodDto: UpdatePeriodDto) {
