@@ -10,6 +10,6 @@ export class ReportController {
     @Param('businessId') businessId: string,
     @Query('periodId') periodId: string,
   ) {
-    this.reportService.getAllReport(businessId, periodId);
+    return this.reportService.getAllReport(businessId, periodId);
   }
 }

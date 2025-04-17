@@ -7,9 +7,9 @@ import { ensureFound } from 'src/common/helpers/ensure-found';
 @Injectable()
 export class ProductionService {
   constructor(private readonly prisma: PrismaService) {}
-  create(createProductionDto: CreateProductionDto, businessId: string) {
+  async create(createProductionDto: CreateProductionDto, businessId: string) {
     const { periodesId, name, category, amount } = createProductionDto;
-    return this.prisma.productionCost.create({
+    const productionData = await this.prisma.productionCost.create({
       data: {
         businessId,
         periodesId,
@@ -18,6 +18,11 @@ export class ProductionService {
         amount,
       },
     });
+
+    return {
+      ...productionData,
+      amount: productionData.amount.toString(),
+    };
   }
 
   async findAllByBusinessId(businessId: string, periodId: string) {
@@ -83,28 +88,42 @@ export class ProductionService {
     };
   }
 
-  findOne(id: string) {
-    return this.prisma.productionCost.findUnique({
-      where: {
-        id,
-      },
-    });
+  async findOne(id: string) {
+    const productionData = ensureFound(
+      await this.prisma.productionCost.findUnique({
+        where: {
+          id,
+        },
+      }),
+    );
+    return {
+      ...productionData,
+      amount: productionData.amount.toString(),
+    };
   }
 
-  update(id: string, updateProductionDto: UpdateProductionDto) {
-    return this.prisma.productionCost.update({
+  async update(id: string, updateProductionDto: UpdateProductionDto) {
+    const productionData = await this.prisma.productionCost.update({
       where: {
         id,
       },
       data: updateProductionDto,
     });
+    return {
+      ...productionData,
+      amount: productionData.amount.toString(),
+    };
   }
 
-  remove(id: string) {
-    return this.prisma.productionCost.delete({
+  async remove(id: string) {
+    const productionData = await this.prisma.productionCost.delete({
       where: {
         id,
       },
     });
+    return {
+      ...productionData,
+      amount: productionData.amount.toString(),
+    };
   }
 }

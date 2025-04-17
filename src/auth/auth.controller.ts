@@ -6,12 +6,15 @@ import {
   ValidationPipe,
   Req,
   Res,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { Request, Response } from 'express';
-import { HttpStatusCode } from 'axios';
+import { ApiCreatedResponse, ApiResponse } from '@nestjs/swagger';
+import { LoginResponse } from './dto/response-login.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -19,12 +22,18 @@ export class AuthController {
 
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
   @Post('register')
+  @HttpCode(HttpStatus.OK)
+  @ApiCreatedResponse({
+    description: 'akun telah dibuat',
+  })
   async register(@Body() registerUserDto: RegisterUserDto) {
     return this.authService.registerUser(registerUserDto);
   }
 
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
   @Post('login')
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({ status: 200, type: LoginResponse })
   async login(@Body() loginUserDto: LoginUserDto, @Res() res: Response) {
     const { user, refreshToken, accessToken } =
       await this.authService.loginUser(loginUserDto);
@@ -39,7 +48,7 @@ export class AuthController {
     }
 
     return res.status(200).json({
-      statusCode: HttpStatusCode.Ok,
+      statusCode: HttpStatus.OK,
       message: 'success',
       data: {
         accessToken,
@@ -61,7 +70,7 @@ export class AuthController {
     });
 
     return res.status(200).json({
-      statusCode: HttpStatusCode.Ok,
+      statusCode: HttpStatus.OK,
       message: 'success',
       data: {
         accessToken,

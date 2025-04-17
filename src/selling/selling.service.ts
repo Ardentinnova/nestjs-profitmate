@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateSellingDto } from './dto/create-selling.dto';
 import { UpdateSellingDto } from './dto/update-selling.dto';
 import { PrismaService } from 'src/common/prisma.service';
@@ -8,7 +8,7 @@ import { ensureFound } from 'src/common/helpers/ensure-found';
 export class SellingService {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(createSellingDto: CreateSellingDto, businessId: string) {
+  async create(createSellingDto: CreateSellingDto, businessId: string) {
     const {
       profitMargin,
       productCount,
@@ -16,7 +16,20 @@ export class SellingService {
       initialInventory,
       periodesId,
     } = createSellingDto;
-    return this.prisma.sellingCost.create({
+
+    const existedSellingData = await this.prisma.sellingCost.findFirst({
+      where: {
+        businessId,
+        periodesId,
+      },
+    });
+
+    if (existedSellingData)
+      throw new ConflictException(
+        'Data harga pokok penjualan sudah ada, silahkan update untuk mengubah',
+      );
+
+    const sellingData = await this.prisma.sellingCost.create({
       data: {
         initialInventory: BigInt(initialInventory),
         endingInventory: BigInt(endingInventory),
@@ -26,6 +39,12 @@ export class SellingService {
         businessId,
       },
     });
+
+    return {
+      ...sellingData,
+      initialInventory: sellingData.initialInventory.toString(),
+      endingInventory: sellingData.endingInventory.toString(),
+    };
   }
 
   async findAll(businessId: string, periodId: string) {
@@ -57,19 +76,23 @@ export class SellingService {
       validSellingData?.initialInventory -
       validSellingData?.endingInventory;
 
+    const scale = 1_000_000n;
+
     const hargaPokokPenjualanPerUnit =
       hargaPokokPenjualan / BigInt(validSellingData.productCount);
 
     const besarKeuntungan =
-      hargaPokokPenjualanPerUnit * BigInt(validSellingData.profitMargin);
+      (hargaPokokPenjualanPerUnit *
+        BigInt(validSellingData.profitMargin * Number(scale))) /
+      scale;
 
     const hargaJualPerProduk = hargaPokokPenjualanPerUnit + besarKeuntungan;
 
     return {
       jumlahProduk: validSellingData?.productCount,
       marginUntung: validSellingData?.profitMargin,
-      persediaanAwal: validSellingData?.initialInventory,
-      persediaanAkhir: validSellingData?.endingInventory,
+      persediaanAwal: validSellingData?.initialInventory.toString(),
+      persediaanAkhir: validSellingData?.endingInventory.toString(),
       hargaPokokProduksi: validtotalProductionCost._sum.amount?.toString(),
       hargaPokokPenjualan: hargaPokokPenjualan.toString(),
       hargaPokokPenjualanPerUnit: hargaPokokPenjualanPerUnit.toString(),
@@ -86,11 +109,11 @@ export class SellingService {
     });
   }
 
-  update(id: string, updateSellingDto: UpdateSellingDto) {
+  async update(id: string, updateSellingDto: UpdateSellingDto) {
     const { productCount, profitMargin, endingInventory, initialInventory } =
       updateSellingDto;
 
-    return this.prisma.sellingCost.update({
+    const sellingData = await this.prisma.sellingCost.update({
       where: {
         id,
       },
@@ -101,13 +124,24 @@ export class SellingService {
         productCount,
       },
     });
+
+    return {
+      ...sellingData,
+      initialInventory: sellingData.initialInventory.toString(),
+      endingInventory: sellingData.endingInventory.toString(),
+    };
   }
 
-  remove(id: string) {
-    return this.prisma.sellingCost.delete({
+  async remove(id: string) {
+    const sellingData = await this.prisma.sellingCost.delete({
       where: {
         id,
       },
     });
+    return {
+      ...sellingData,
+      initialInventory: sellingData.initialInventory.toString(),
+      endingInventory: sellingData.endingInventory.toString(),
+    };
   }
 }

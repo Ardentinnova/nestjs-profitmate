@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { ensureFound } from 'src/common/helpers/ensure-found';
 import { PrismaService } from 'src/common/prisma.service';
 
 @Injectable()
@@ -6,18 +7,28 @@ export class ReportService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getAllReport(businessId: string, periodId: string) {
+    const selectedPeriodId =
+      periodId ||
+      ensureFound(
+        await this.prisma.periode.findFirst({
+          where: { businessId },
+          orderBy: { createdAt: 'desc' },
+          select: { id: true },
+        }),
+      )?.id;
+
     const [transactions, hargaPokokProduksi, hargaPokokPenjualan] =
       await Promise.all([
         await this.prisma.transaction.findMany({
           where: {
             businessId,
-            periodesId: periodId,
+            periodesId: selectedPeriodId,
           },
         }),
         this.prisma.productionCost.aggregate({
           where: {
             businessId,
-            periodesId: periodId,
+            periodesId: selectedPeriodId,
           },
           _sum: {
             amount: true,
@@ -26,7 +37,7 @@ export class ReportService {
         this.prisma.sellingCost.findFirst({
           where: {
             businessId,
-            periodesId: periodId,
+            periodesId: selectedPeriodId,
           },
           select: {
             endingInventory: true,
@@ -101,6 +112,7 @@ export class ReportService {
         persediaanAwal: hargaPokokPenjualan.initialInventory.toString(),
         hargaPokokProduksi: hargaPokokProduksi._sum.amount?.toString(),
         persediaanAkhir: hargaPokokPenjualan.endingInventory.toString(),
+        total: totalHargaPokokPenjualan.toString(),
       },
       bebanOperasional: {
         data: operationalExpense,

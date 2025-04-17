@@ -39,7 +39,7 @@ export class AuthService {
         userId = data.user.id;
       }
 
-      await tx.profile.create({
+      const user = await tx.profile.create({
         data: {
           name,
           id: data.user?.id!,
@@ -47,7 +47,7 @@ export class AuthService {
         },
       });
 
-      returnData = data;
+      returnData = user;
     });
     return {
       user: returnData,
@@ -71,7 +71,7 @@ export class AuthService {
     };
   }
 
-  async refreshTokenUser(req : any) {
+  async refreshTokenUser(req: any) {
     try {
       const refreshToken = req.cookies['refreshToken'];
       if (!refreshToken) {
