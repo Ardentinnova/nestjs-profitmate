@@ -7,6 +7,10 @@ export class RegisterUserDto {
   @IsString()
   name: string;
 
+  @ApiProperty({ description: 'Nama usaha user', example: 'Toko saya' })
+  @IsString()
+  businessName: string;
+
   @ApiProperty({ description: 'Email user', example: 'udin@gmail.com' })
   @IsNotEmpty()
   @IsString()

@@ -20,7 +20,7 @@ export class AuthService {
     this.supabase = supabaseService.getClient();
   }
   async registerUser(registerDto: RegisterUserDto) {
-    const { email, name, password } = registerDto;
+    const { email, name, password, businessName } = registerDto;
 
     let returnData: any;
 
@@ -43,6 +43,7 @@ export class AuthService {
         data: {
           name,
           id: data.user?.id!,
+          businessName,
           email,
         },
       });
