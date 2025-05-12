@@ -7,11 +7,11 @@ import { ensureFound } from 'src/common/helpers/ensure-found';
 @Injectable()
 export class ProductionService {
   constructor(private readonly prisma: PrismaService) {}
-  async create(createProductionDto: CreateProductionDto, businessId: string) {
+  async create(createProductionDto: CreateProductionDto, userId: string) {
     const { periodesId, name, category, amount } = createProductionDto;
     const productionData = await this.prisma.productionCost.create({
       data: {
-        businessId,
+        userId,
         periodesId,
         name,
         category,
@@ -25,19 +25,19 @@ export class ProductionService {
     };
   }
 
-  async findAllByBusinessId(businessId: string, periodId: string) {
+  async findAllByPeriodId(userId: string, periodId: string) {
     const selectedPeriodId =
       periodId ||
       ensureFound(
         await this.prisma.periode.findFirst({
-          where: { businessId },
+          where: { userId },
           orderBy: { createdAt: 'desc' },
           select: { id: true },
         }),
       )?.id;
 
     const productionCosts = await this.prisma.productionCost.findMany({
-      where: { businessId, periodesId: selectedPeriodId },
+      where: { periodesId: selectedPeriodId },
     });
 
     let totalIngridientsCost = 0n;
@@ -76,7 +76,7 @@ export class ProductionService {
       totalIngridientsCost + totalLaborCost + totalOverheadCost;
 
     return {
-      businessId,
+      userId,
       periodId: selectedPeriodId,
       bahanBaku,
       biayaTenagaKerja,

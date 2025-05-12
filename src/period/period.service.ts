@@ -7,24 +7,24 @@ import { ensureFound } from 'src/common/helpers/ensure-found';
 @Injectable()
 export class PeriodService {
   constructor(private readonly prisma: PrismaService) {}
-  create(createPeriodDto: CreatePeriodDto) {
-    const { name, endDate, startDate, businessId } = createPeriodDto;
+  create(createPeriodDto: CreatePeriodDto, userId) {
+    const { name, endDate, startDate } = createPeriodDto;
 
     return this.prisma.periode.create({
       data: {
         name,
-        businessId,
         startDate,
+        userId,
         endDate,
       },
     });
   }
 
-  async findAll(businessId: string) {
+  async findAll(userId: string) {
     return ensureFound(
       await this.prisma.periode.findMany({
         where: {
-          businessId,
+          userId,
         },
       }),
     );

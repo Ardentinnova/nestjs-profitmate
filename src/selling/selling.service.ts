@@ -8,7 +8,7 @@ import { ensureFound } from 'src/common/helpers/ensure-found';
 export class SellingService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(createSellingDto: CreateSellingDto, businessId: string) {
+  async create(createSellingDto: CreateSellingDto, userId: string) {
     const {
       profitMargin,
       productCount,
@@ -19,7 +19,7 @@ export class SellingService {
 
     const existedSellingData = await this.prisma.sellingCost.findFirst({
       where: {
-        businessId,
+        userId,
         periodesId,
       },
     });
@@ -36,7 +36,7 @@ export class SellingService {
         productCount,
         profitMargin,
         periodesId,
-        businessId,
+        userId,
       },
     });
 
@@ -47,12 +47,12 @@ export class SellingService {
     };
   }
 
-  async findAll(businessId: string, periodId: string) {
+  async findAll(userId: string, periodId: string) {
     const selectedPeriod =
       periodId ||
       ensureFound(
         await this.prisma.periode.findFirst({
-          where: { businessId },
+          where: { userId },
           orderBy: { createdAt: 'desc' },
           select: { id: true },
         }),
@@ -60,10 +60,10 @@ export class SellingService {
 
     const [sellingData, totalProductionCost] = await Promise.all([
       this.prisma.sellingCost.findFirst({
-        where: { businessId, periodesId: selectedPeriod },
+        where: { userId, periodesId: selectedPeriod },
       }),
       this.prisma.productionCost.aggregate({
-        where: { businessId, periodesId: selectedPeriod },
+        where: { userId, periodesId: selectedPeriod },
         _sum: { amount: true },
       }),
     ]);

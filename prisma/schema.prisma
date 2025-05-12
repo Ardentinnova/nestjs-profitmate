@@ -16,31 +16,21 @@ model Profile {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  business Business[]
-}
-
-model Business {
-  id        String   @id @default(uuid())
-  name      String
-  workerId  String
-  createdAt DateTime @default(now())
-
-  profiles        Profile          @relation(fields: [workerId], references: [id])
   periodes        Periode[]
   transactions    Transaction[]
-  productionCosts ProductionCost[]
   sellingCosts    SellingCost[]
+  productionCosts ProductionCost[]
 }
 
 model Periode {
-  id         String   @id @default(uuid())
-  name       String
-  businessId String
-  startDate  DateTime
-  endDate    DateTime?
-  createdAt  DateTime @default(now())
+  id        String    @id @default(uuid())
+  name      String
+  userId    String
+  startDate DateTime
+  endDate   DateTime?
+  createdAt DateTime  @default(now())
 
-  business        Business         @relation(fields: [businessId], references: [id])
+  profiles        Profile          @relation(fields: [userId], references: [id])
   transactions    Transaction[]
   productionCosts ProductionCost[]
   sellingCosts    SellingCost[]
@@ -51,40 +41,40 @@ model Transaction {
   name              String
   description       String
   amount            BigInt
-  businessId        String
   periodesId        String
+  userId            String
   type              TransactionType
   expenseCategories ExpenseCategory?
   createdAt         DateTime         @default(now())
 
-  business Business @relation(fields: [businessId], references: [id])
-  periode  Periode  @relation(fields: [periodesId], references: [id])
+  periode Periode @relation(fields: [periodesId], references: [id])
+  profile Profile @relation(fields: [userId], references: [id])
 }
 
 model ProductionCost {
   id         String             @id @default(uuid())
-  businessId String
+  userId     String
   periodesId String
   name       String
   amount     BigInt
   category   ProductionCategory
   createdAt  DateTime           @default(now())
 
-  business Business @relation(fields: [businessId], references: [id])
-  periode  Periode  @relation(fields: [periodesId], references: [id])
+  periode Periode @relation(fields: [periodesId], references: [id])
+  profile Profile @relation(fields: [userId], references: [id])
 }
 
 model SellingCost {
   id               String @id @default(uuid())
-  businessId       String
+  userId           String
   periodesId       String
   productCount     Int
   profitMargin     Float
   initialInventory BigInt
   endingInventory  BigInt
 
-  business Business @relation(fields: [businessId], references: [id])
-  periode  Periode  @relation(fields: [periodesId], references: [id])
+  profile Profile @relation(fields: [userId], references: [id])
+  periode Periode @relation(fields: [periodesId], references: [id])
 }
 
 enum TransactionType {

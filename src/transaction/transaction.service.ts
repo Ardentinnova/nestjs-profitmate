@@ -8,16 +8,9 @@ import { Transaction } from 'generated/prisma';
 @Injectable()
 export class TransactionService {
   constructor(private readonly prisma: PrismaService) {}
-  async create(createTransactionDto: CreateTransactionDto) {
-    const {
-      name,
-      type,
-      amount,
-      businessId,
-      periodesId,
-      description,
-      expenseCategories,
-    } = createTransactionDto;
+  async create(createTransactionDto: CreateTransactionDto, userId: string) {
+    const { name, type, amount, periodesId, description, expenseCategories } =
+      createTransactionDto;
 
     return await this.prisma.$transaction(async (tx) => {
       const sum = ensureFound(
@@ -26,7 +19,7 @@ export class TransactionService {
             amount: true,
           },
           where: {
-            businessId,
+            userId,
             periodesId,
           },
         }),
@@ -48,7 +41,7 @@ export class TransactionService {
           amount: inputAmount,
           type,
           periodesId,
-          businessId,
+          userId,
           expenseCategories,
         },
       });
@@ -60,11 +53,11 @@ export class TransactionService {
     });
   }
 
-  async findAll(businessId: string, periodeId: string) {
+  async findAll(periodeId: string, userId: string) {
     const transactions = ensureFound<Transaction[]>(
       await this.prisma.transaction.findMany({
         where: {
-          businessId,
+          userId,
           AND: {
             periodesId: periodeId,
           },
@@ -77,7 +70,7 @@ export class TransactionService {
 
     const currentBalance = await this.prisma.transaction.aggregate({
       where: {
-        businessId,
+        userId,
         AND: {
           periodesId: periodeId,
         },

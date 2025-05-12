@@ -13,8 +13,13 @@ import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { Request, Response } from 'express';
-import { ApiCreatedResponse, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiResponse,
+  ApiResponseProperty,
+} from '@nestjs/swagger';
 import { LoginResponse } from './dto/response-login.dto';
+import { RefreshResponse } from './dto/response-refresh.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -58,6 +63,8 @@ export class AuthController {
   }
 
   @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({ status: 200, type: RefreshResponse })
   async refresh(@Req() req: Request, @Res() res: Response) {
     const { accessToken, refreshToken } =
       await this.authService.refreshTokenUser(req);
@@ -79,6 +86,8 @@ export class AuthController {
   }
 
   @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({ status: 200 })
   async logout(@Res() res: Response) {
     return res.status(200).json(await this.authService.logout(res));
   }

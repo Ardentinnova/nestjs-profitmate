@@ -6,12 +6,12 @@ import { PrismaService } from 'src/common/prisma.service';
 export class ReportService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getAllReport(businessId: string, periodId: string) {
+  async getAllReport(periodId: string, userId: string) {
     const selectedPeriodId =
       periodId ||
       ensureFound(
         await this.prisma.periode.findFirst({
-          where: { businessId },
+          where: { userId },
           orderBy: { createdAt: 'desc' },
           select: { id: true },
         }),
@@ -21,13 +21,13 @@ export class ReportService {
       await Promise.all([
         await this.prisma.transaction.findMany({
           where: {
-            businessId,
+            userId,
             periodesId: selectedPeriodId,
           },
         }),
         this.prisma.productionCost.aggregate({
           where: {
-            businessId,
+            userId,
             periodesId: selectedPeriodId,
           },
           _sum: {
@@ -36,7 +36,7 @@ export class ReportService {
         }),
         this.prisma.sellingCost.findFirst({
           where: {
-            businessId,
+            userId,
             periodesId: selectedPeriodId,
           },
           select: {
