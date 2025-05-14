@@ -6,13 +6,16 @@ export class CreatePeriodDto {
   @IsString()
   name: string;
 
-  @ApiProperty({ description: 'Start date of the period', example: new Date("2025-10-23") })
+  @ApiProperty({
+    description: 'Start date of the period',
+    example: new Date('2025-10-23'),
+  })
   @IsDateString()
   startDate: Date;
 
   @ApiProperty({
     description: 'end date of the period',
-    example: new Date("2025-12-23"),
+    example: new Date('2025-12-23'),
   })
   @IsDateString()
   endDate: Date;

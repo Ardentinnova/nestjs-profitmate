@@ -6,7 +6,6 @@ export class ResponseTransactionAll {
   currentBalance: string;
 
   @ApiProperty({
-    description: 'Array seluruh transaksi',
     example: [
       {
         id: '60561a7a-3db4-4b4b-b516-e024331528e1',

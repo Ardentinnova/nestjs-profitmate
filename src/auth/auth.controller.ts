@@ -13,11 +13,7 @@ import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { Request, Response } from 'express';
-import {
-  ApiCreatedResponse,
-  ApiResponse,
-  ApiResponseProperty,
-} from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiResponse } from '@nestjs/swagger';
 import { LoginResponse } from './dto/response-login.dto';
 import { RefreshResponse } from './dto/response-refresh.dto';
 

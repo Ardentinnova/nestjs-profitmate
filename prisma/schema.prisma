@@ -40,15 +40,14 @@ model Periode {
 model Transaction {
   id                String           @id @default(uuid())
   name              String
-  description       String
   amount            BigInt
-  periodesId        String
+  periodId        String
   userId            String
   type              TransactionType
   expenseCategories ExpenseCategory?
   createdAt         DateTime         @default(now())
 
-  periode Periode @relation(fields: [periodesId], references: [id])
+  periode Periode @relation(fields: [periodId], references: [id])
   profile Profile @relation(fields: [userId], references: [id])
 }
 

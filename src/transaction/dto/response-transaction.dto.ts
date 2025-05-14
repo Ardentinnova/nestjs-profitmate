@@ -14,12 +14,6 @@ export class ResponseTransaction {
   name: string;
 
   @ApiProperty({
-    description: 'Nama transaksi',
-    example: 'Pembelian bahan baku terigu untuk produksi periode di warung xxx',
-  })
-  description: string;
-
-  @ApiProperty({
     description: 'Nominal transaksi',
     example: '1600000',
   })

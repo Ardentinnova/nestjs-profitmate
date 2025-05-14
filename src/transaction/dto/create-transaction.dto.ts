@@ -10,7 +10,7 @@ export class CreateTransactionDto {
   })
   @IsString()
   @IsNotEmpty()
-  periodesId: string;
+  periodId: string;
 
   @ApiProperty({
     description: 'Nama transaksi',
@@ -19,14 +19,6 @@ export class CreateTransactionDto {
   @IsString()
   @IsNotEmpty()
   name: string;
-
-  @ApiProperty({
-    description: 'Deskripsi transaksi',
-    example: 'Pembelian bahan baku terigu untuk produksi periode di warung xxx',
-  })
-  @IsString()
-  @IsNotEmpty()
-  description: string;
 
   @ApiProperty({
     description: 'Nominal transaksi (dalam string)',

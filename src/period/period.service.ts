@@ -7,7 +7,7 @@ import { ensureFound } from 'src/common/helpers/ensure-found';
 @Injectable()
 export class PeriodService {
   constructor(private readonly prisma: PrismaService) {}
-  create(createPeriodDto: CreatePeriodDto, userId) {
+  create(createPeriodDto: CreatePeriodDto, userId: string) {
     const { name, endDate, startDate } = createPeriodDto;
 
     return this.prisma.periode.create({

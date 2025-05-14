@@ -32,9 +32,10 @@ export class TransactionController {
     return await this.transactionService.create(createTransactionDto, user.id);
   }
 
-  @Get(':periodId')
+  @Get('a/:periodId')
   @ApiResponse({ status: 201, type: ResponseTransactionAll, isArray: true })
   findAll(@Param('periodId') periodId: string, @User() user: Profile) {
+    console.log('masuk sinsi');
     return this.transactionService.findAll(periodId, user.id);
   }
 
