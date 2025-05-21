@@ -103,6 +103,7 @@ export class ProductionService {
   }
 
   async update(id: string, updateProductionDto: UpdateProductionDto) {
+    console.log(updateProductionDto);
     const productionData = await this.prisma.productionCost.update({
       where: {
         id,

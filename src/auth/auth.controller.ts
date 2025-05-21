@@ -8,6 +8,7 @@ import {
   Res,
   HttpCode,
   HttpStatus,
+  Get,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
@@ -16,6 +17,8 @@ import { Request, Response } from 'express';
 import { ApiCreatedResponse, ApiResponse } from '@nestjs/swagger';
 import { LoginResponse } from './dto/response-login.dto';
 import { RefreshResponse } from './dto/response-refresh.dto';
+import { Profile } from 'generated/prisma';
+import { User } from 'src/common/decorators/user.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -86,5 +89,13 @@ export class AuthController {
   @ApiResponse({ status: 200 })
   async logout(@Res() res: Response) {
     return res.status(200).json(await this.authService.logout(res));
+  }
+
+  @Get('me')
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({ status: 200 })
+  async getUserInfo(@User() user: Profile) {
+    console.log(user);
+    return user;
   }
 }

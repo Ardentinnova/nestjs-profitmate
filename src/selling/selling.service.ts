@@ -89,6 +89,7 @@ export class SellingService {
     const hargaJualPerProduk = hargaPokokPenjualanPerUnit + besarKeuntungan;
 
     return {
+      id: sellingData?.id,
       jumlahProduk: validSellingData?.productCount,
       marginUntung: validSellingData?.profitMargin,
       persediaanAwal: validSellingData?.initialInventory.toString(),

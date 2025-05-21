@@ -11,9 +11,19 @@ import { ResponseReport } from './dto/response-report.dto';
 export class ReportController {
   constructor(private readonly reportService: ReportService) {}
 
-  @Get(':periodId')
+  @Get('a/:periodId')
   @ApiResponse({ status: 200, type: ResponseReport })
   getAllReport(@Param('periodId') periodId: string, @User() user: Profile) {
     return this.reportService.getAllReport(periodId, user.id);
+  }
+
+  @Get('laba-bersih')
+  getProfitPerperiod(@User() user: Profile) {
+    return this.reportService.getLabaBersihPerPeriod(user.id);
+  }
+
+  @Get('laba-rugi')
+  getLabaRugiReport(@User() user: Profile) {
+    return this.reportService.getSummaryPerPeriod(user.id);
   }
 }
