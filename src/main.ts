@@ -30,7 +30,11 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: ['http://localhost:3000', 'http://localhost:5173'],
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:5173',
+      'https://react-profitmate.vercel.app',
+    ],
     credentials: true,
   });
 
