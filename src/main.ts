@@ -34,6 +34,7 @@ async function bootstrap() {
       'http://localhost:3000',
       'http://localhost:5173',
       'https://react-profitmate.vercel.app',
+      'https://kuring-profitmate.vercel.app',
     ],
     credentials: true,
   });
