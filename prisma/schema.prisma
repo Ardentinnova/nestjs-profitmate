@@ -43,6 +43,7 @@ model Transaction {
   name              String
   amount            BigInt
   periodId          String
+  description       String?
   userId            String
   type              TransactionType
   expenseCategories ExpenseCategory?
