@@ -94,17 +94,19 @@ export class TransactionService {
     }
 
     async findOne(id: string) {
-        return ensureFound(
+        const data = ensureFound(
             await this.prisma.transaction.findUnique({
                 where: {
                     id,
                 },
             }),
         );
+
+        return { ...data, amount: data.amount.toString() };
     }
 
     async update(id: string, updateTransactionDto: UpdateTransactionDto) {
-        const { expenseCategories, name, amount, type } = updateTransactionDto;
+        const { expenseCategories, description, name, amount, type } = updateTransactionDto;
 
         const cnvAmount = BigInt(amount!);
 
@@ -117,6 +119,7 @@ export class TransactionService {
                 amount: cnvAmount,
                 name,
                 expenseCategories,
+                description
             },
         });
 
